@@ -108,15 +108,14 @@ void insertProcQ(pcb_t **tp, pcb_t *p){
   if(emptyProcQ(*tp)){
     p -> p_next = p;
     p -> p_prev = p;
-    *tp = p;
+    (*tp) = p;
+  } else {
+    p -> p_prev = (*tp);
+    p -> p_next = (*tp) -> p_next;
+    p -> p_next -> p_prev = p;
+    (*tp) -> p_next = p;
+    (*tp) = p;
   }
-  /*//pcb_t *temp = NULL;*/
-  p -> p_next = tp -> p_next;
-  tp -> p_next = p;
-  p -> p_prev = tp;
-  p -> p_next -> p_prev = p;
-  *tp = p;
-
 }
 
 
@@ -125,23 +124,18 @@ void insertProcQ(pcb_t **tp, pcb_t *p){
 Return NULL if the process queue was initially empty; otherwise return the pointer to the removed element.
 Update the process queue's tail pointer if necessary. */
 pcb_t *removeProcQ(pcb_t **tp){
+  pcb_t* head = headProcQ(tp);
   if(emptyProcQ(tp)){
     return NULL;
-  } else {
-    if(tp -> p_next == tp) {
-      pcb_t* temp = tp;temp -> p_prev = temp -> p_next = NULL;
-      tp = NULL;
-      return temp;
-    }
-    pcb_t* temp;
-    temp = tp -> p_next;
-    tp -> p_next = temp -> p_next;
-    temp -> p_next -> p_prev = tp;
-    temp -> p_prev = temp -> p_next = NULL;
-    /*//tp -> p_next = temp -> p_next;*/
-    return temp;
   }
-}
+  if(head == tp) {
+    head = NULL;
+  } else {
+    (*tp) -> p_next = head -> p_next;
+    head -> p_next -> p_prev = tp;
+  }
+  return head;
+  }
 
 
 
