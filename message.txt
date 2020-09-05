@@ -1,0 +1,81 @@
+pcb.c: In function ‘initPcbs’:
+pcb.c:77:3: error: ‘for’ loop initial declarations are only allowed in C99 or C11 mode
+   for(int i = 0; i < MAXPROC; i++) {
+   ^~~
+pcb.c:77:3: note: use option -std=c99, -std=gnu99, -std=c11 or -std=gnu11 to compile your code
+pcb.c: In function ‘insertProcQ’:
+pcb.c:114:20: error: ‘*tp’ is a pointer; did you mean to use ‘->’?
+   p -> p_next = tp -> p_next;
+                    ^~
+                    ->
+pcb.c:115:6: error: ‘*tp’ is a pointer; did you mean to use ‘->’?
+   tp -> p_next = p
+      ^~
+      ->
+pcb.c:116:3: error: expected ‘;’ before ‘p’
+   p -> p_prev = tp;
+   ^
+pcb.c: In function ‘removeProcQ’:
+pcb.c:128:17: warning: passing argument 1 of ‘emptyProcQ’ from incompatible pointer type [-Wincompatible-pointer-types]
+   if(emptyProcQ(tp)){
+                 ^~
+pcb.c:99:5: note: expected ‘pcb_t * {aka struct pcb_t *}’ but argument is of type ‘pcb_t ** {aka struct pcb_t **}’
+ int emptyProcQ(pcb_t *tp){
+     ^~~~~~~~~~
+pcb.c:131:11: error: ‘*tp’ is a pointer; did you mean to use ‘->’?
+     if(tp -> p_next == tp) {
+           ^~
+           ->
+pcb.c:132:21: warning: initialization from incompatible pointer type [-Wincompatible-pointer-types]
+       pcb_t* temp = tp;temp -> p_sibprev -> p_sibnext = p -> p_sibnext;
+                     ^~
+pcb.c:132:57: error: ‘p’ undeclared (first use in this function); did you mean ‘tp’?
+       pcb_t* temp = tp;temp -> p_sibprev -> p_sibnext = p -> p_sibnext;
+                                                         ^
+                                                         tp
+pcb.c:132:57: note: each undeclared identifier is reported only once for each function it appears in
+pcb.c:136:22: error: ‘*tp’ is a pointer; did you mean to use ‘->’?
+     pcb_t* temp = tp -> p_next;
+                      ^~
+                      ->
+pcb.c:137:8: error: ‘*tp’ is a pointer; did you mean to use ‘->’?
+     tp -> p_next = temp -> p_next;
+        ^~
+        ->
+pcb.c:138:30: warning: assignment from incompatible pointer type [-Wincompatible-pointer-types]
+     temp -> p_next -> p_prev = tp;
+                              ^
+pcb.c: In function ‘outProcQ’:
+pcb.c:154:17: warning: passing argument 1 of ‘emptyProcQ’ from incompatible pointer type [-Wincompatible-pointer-types]
+   if(emptyProcQ(tp)){
+                 ^~
+pcb.c:99:5: note: expected ‘pcb_t * {aka struct pcb_t *}’ but argument is of type ‘pcb_t ** {aka struct pcb_t **}’
+ int emptyProcQ(pcb_t *tp){
+     ^~~~~~~~~~
+pcb.c:157:17: warning: passing argument 1 of ‘headProcQ’ from incompatible pointer type [-Wincompatible-pointer-types]
+   if((headProcQ(tp) == p) || (tp == p)){
+                 ^~
+In file included from pcb.c:3:0:
+h/pcb.h:40:15: note: expected ‘pcb_t * {aka struct pcb_t *}’ but argument is of type ‘pcb_t ** {aka struct pcb_t **}’
+ extern pcb_t *headProcQ (pcb_t *tp);
+               ^~~~~~~~~
+pcb.c:157:34: warning: comparison of distinct pointer types lacks a cast
+   if((headProcQ(tp) == p) || (tp == p)){
+                                  ^~
+pcb.c:158:24: warning: passing argument 1 of ‘removeProcQ’ from incompatible pointer type [-Wincompatible-pointer-types]
+     return removeProcQ(p);
+                        ^
+pcb.c:127:8: note: expected ‘pcb_t ** {aka struct pcb_t **}’ but argument is of type ‘pcb_t * {aka struct pcb_t *}’
+ pcb_t *removeProcQ(pcb_t **tp){
+        ^~~~~~~~~~~
+pcb.c: In function ‘insertChild’:
+pcb.c:193:17: error: ‘tp’ undeclared (first use in this function); did you mean ‘p’?
+   if(emptyChild(tp)){
+                 ^~
+                 p
+pcb.c: In function ‘outChild’:
+pcb.c:254:35: error: expected ‘;’ before ‘p’
+   p -> p_sibnext = p -> p_sibprev p -> p_prnt = NULL;
+                                   ^
+<builtin>: recipe for target 'pcb.o' failed
+make: *** [pcb.o] Error 1
