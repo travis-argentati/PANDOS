@@ -14,7 +14,8 @@ HIDDEN semd_t *semd_h,*semdFree_h;
 
 To support the ASL there should be the following externally visible functions:
 int insertBlocked(int *semAdd, pcb_t *p){
-
+    /* given semAdd
+    return p */
 }
 /* Insert the pcb pointed to by p at the tail of the process queue as-sociated
 with the semaphore whose physical address is semAdd and set the semaphore
@@ -29,7 +30,8 @@ return FALSE.*/
 
 
 pcb_t *removeBlocked(int *semAdd){
-
+    /* given semAdd
+    return p? (pointer) */
 }
 /*  Search  the  ASL  for  a  descriptor  of  this  semaphore.   If  none  is
 found, return NULL; otherwise, remove the first (i.e. head) pcb from the
@@ -40,14 +42,16 @@ the semdFree list. */
 
 
 pcb_t *outBlocked(pcb_t *p){
-
+    /* given p
+    return ? */
 }
 /* Remove the pcb pointed to by p from the process queue associated with p’s
 semaphore (p→p_semAdd) on the ASL. If pcb pointed to  bypdoes  not  appear  in
 the  process  queue  associated  with p’s semaphore, which is an error condition,
 return NULL; otherwise, re-turn p. */
 pcb_t *headBlocked(int *semAdd){
-
+    /* given semAdd
+    return p? (pointer) */
 }
 /* Return a pointer to the pcb that is at the head of the process queue
 associated with the semaphore semAdd. Return NULL if semAdd is not found on the
@@ -55,7 +59,7 @@ ASL or if the process queue associated with semAdd is empty. */
 
 
 void initASL(){
-
+    
 }
 /* Initialize the semdFree list to contain all the elements of the array
 static semd_t semdTable[MAXPROC] This method will be only called once during
