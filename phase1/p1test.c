@@ -12,12 +12,12 @@
  *      Modified by Michael Goldweber on May 2020
  */
 
-#include "h/const.h"
-#include "h/types.h"
+#include "../h/const.h"
+#include "../h/types.h"
 
 #include "/usr/local/include/umps3/umps/libumps.h"
-#include "h/pcb.h"
-#include "h/asl.h"
+#include "../h/pcb.h"
+#include "../h/asl.h"
 
 
 #define MAXPROC	20
