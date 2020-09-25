@@ -205,3 +205,4 @@ pcb_t *outChild(pcb_t *p){
   p -> p_sibnext = p -> p_sibprev = p -> p_prnt = NULL;
   return temp;
 }
+
