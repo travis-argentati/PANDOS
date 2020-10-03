@@ -1,19 +1,48 @@
-#include "/Phase 1/h/const.h"
-#include "/Phase 1/h/types.h"
-#include "/Phase 1/h/asl.h"
-#include "/Phase 1/h/pcb.h"
+#include "../h/const.h"
+#include "../h/types.h"
+#include "../h/asl.h"
+#include "../h/pcb.h"
 
-processCount = 0;
-softBlockedCount = 0;
-readyQueue = mkEmptyProcQ();
-currentProcess = NULL;
-int deviceSema4 = 0;
+
+static int processCount;
+static int softBlockedCount;
+static pcb_t *readyQueue;
+static pcb_t *currentProcess;
+static int deviceSema4;
 
 void main(){
 
+  processCount = 0;
+  softBlockedCount = 0;
+  readyQueue = mkEmptyProcQ();
+  currentProcess = NULL;
+  deviceSema4 = 0;
+
   initPcbs();
   initASL();
+  
+  /* instantiate 1 process:
+      be in kernal mode
+      enable interrupts
+      use program counter to set address of test
+      set stack pointer to RAMTOP
+      increment processCount (processCount++)
+      call allocPcb in pcb.c to set process tree fields to NULL
+      p_time = 0;
+      p_semAdd = NULL;
+      p_supportStruct = NULL;
+      then call insertProcQ
+      then call scheduler() */
 
+}
 
-
+generalExpectionHandler(){
+  /*
+  Look at cause register stored by BIOS
+  Multiway branch
+  -interrupts
+  -SYSCALL
+  -programException
+  -memoryManagment
+  */
 }
