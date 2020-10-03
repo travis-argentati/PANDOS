@@ -1,7 +1,7 @@
-#include "h/const.h"
-#include "h/types.h"
-#include "h/asl.h"
-#include "h/pcb.h"
+#include "../h/const.h"
+#include "../h/types.h"
+#include "../h/asl.h"
+#include "../h/pcb.h"
 
 
 HIDDEN semd_t *semd_h,*semdFree_h;

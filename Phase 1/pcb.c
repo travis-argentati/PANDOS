@@ -1,6 +1,6 @@
-#include "h/const.h"
-#include "h/types.h"
-#include "h/pcb.h"
+#include "../h/const.h"
+#include "../h/types.h"
+#include "../h/pcb.h"
 
 static pcb_t *pcbFree_h;
 
