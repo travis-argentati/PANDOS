@@ -1,14 +1,16 @@
+#include "../h/const.h"
+#include "../h/types.h"
+#include "../h/asl.h"
+#include "../h/pcb.h"
 
 
 
+static int  mutex;
 
 
-
-
-
-SyscallHandler(){
-  switch(/*whatever was in a0*/){
-    case 1: create_Process();
+void SyscallHandler(int syscallRequest, int p_s, int p_supportStruct, int waitForTerminalRead){
+  switch(s_a0/*whatever was in a0*/){
+    case 1: int retValue = create_Process();
       break;
     case 2: terminate_Process();
       break;
@@ -36,15 +38,43 @@ void create_Process(){
   pcb_t *temp = allocPcb();
   processCount++;
   //Copy the state pointed at by a1(address of a process state) into temp -> p_s
-  temp -> p_s = ;
+  temp -> p_s = s_a1;
+  //p_supportStruct from a2. If no parameter is provided, this field is set to NULL.
+  temp -> p_supportStruct = s_a2;
+
   insertProcQ(&readyQueue, temp);
   insertChild(currentProcess, temp);
+  temp -> p_time = 0;
+  //Since this pcb/process is in "ready", not the blocked state
+  temp -> p_semAdd = NULL;
   //put a return code in l0
   //return control to current process (LDST(& static is stored))
-
-void terminate_Process(){
-
-
+  LDST(temp);
 }
 
+void terminate_Process(){
+  // While(currentProcess -> p_child != NULL){
+  While(!emptyChild(currentProcess)){
+    terminate_Process(removeChild(currentProcess));
+  }
+  outChild(currentProcess);
+}
+
+void passeren(){
+  mutex--;
+  if(mutex < 0){
+    insertBlocked(&mutex, currentProcess);
+    scheduler();
+  }
+  // LDST(return control to currentProcess)
+  LDST(currentProcess -> p_s);
+}
+
+void verhogen(){
+  mutex++;
+  if(mutex <= 0){
+    pcb_t *temp = removeBlocked(&mutex);
+    insertProcQ(&readyQueue, temp);
+  }
+  LDST(currentProcess -> p_s);
 }

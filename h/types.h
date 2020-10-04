@@ -60,18 +60,16 @@ typedef struct pcb_t{
 									*p_sibprev;  /*pointer to previous sibling*/
 
 /*process status information*/
-	/*state_t         p_s;         /*processor state*/
+	state_t         p_s;         /*processor state*/
 	cpu_t           p_time;      /*cpu time used by proc*/
 	int							*p_semAdd;   /*pointer to sema4 on*/
 																/*which process blocked*/
 /*support layer information*/
-	/*support_t				*p_supportStruct;*/
-/*ptr to support struct*/
+	support_t				*p_supportStruct;  /*ptr to support struct*/
 } pcb_t;
 
 /*, *pcb_PTR;*/
 
-/*semaphore descriptor type*/
 /*semaphore descriptor type*/
 typedef struct semd_t{
 	struct semd_t 	*s_next;     /*next element on the ASL*/
