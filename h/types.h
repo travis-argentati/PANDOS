@@ -72,7 +72,6 @@ typedef struct pcb_t{
 /*, *pcb_PTR;*/
 
 /*semaphore descriptor type*/
-/*semaphore descriptor type*/
 typedef struct semd_t{
 	struct semd_t 	*s_next;     /*next element on the ASL*/
 				 int 			*s_semAdd;   /*pointer to the semaphore*/

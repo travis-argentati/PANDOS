@@ -1,5 +1,6 @@
 #include "../h/const.h"
 #include "../h/types.h"
+#include "../h/initial.h"
 #include "../h/asl.h"
 #include "../h/pcb.h"
 
@@ -34,7 +35,27 @@ void main(){
       then call insertProcQ
       then call scheduler() */
 
+
+  processCount = 0;
+  softBlockedCount = 0;
+  readyQueue = mkEmptyProcQ();
+  currentProcess = NULL;
+  deviceSema4 = 0;
+
+  /*
+  instantiate 1 process
+  in kernal mode
+  interrupts enabled
+  pc p1test
+  sp last and of ram
+  processCount++;
+  insertProcQ();
+  scheduler();
+  */
+
+
 }
+
 
 generalExpectionHandler(){
   /*
