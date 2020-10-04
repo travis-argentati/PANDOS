@@ -4,6 +4,7 @@
 #include "../h/asl.h"
 #include "../h/pcb.h"
 
+
 static int processCount;
 static int softBlockedCount;
 static pcb_t *readyQueue;
@@ -12,8 +13,28 @@ static int deviceSema4;
 
 void main(){
 
+  processCount = 0;
+  softBlockedCount = 0;
+  readyQueue = mkEmptyProcQ();
+  currentProcess = NULL;
+  deviceSema4 = 0;
+
   initPcbs();
   initASL();
+  
+  /* instantiate 1 process:
+      be in kernal mode
+      enable interrupts
+      use program counter to set address of test
+      set stack pointer to RAMTOP
+      increment processCount (processCount++)
+      call allocPcb in pcb.c to set process tree fields to NULL
+      p_time = 0;
+      p_semAdd = NULL;
+      p_supportStruct = NULL;
+      then call insertProcQ
+      then call scheduler() */
+
 
   processCount = 0;
   softBlockedCount = 0;
@@ -34,6 +55,7 @@ void main(){
 
 
 }
+
 
 generalExpectionHandler(){
   /*
