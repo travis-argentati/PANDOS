@@ -78,3 +78,35 @@ void verhogen(){
   }
   LDST(currentProcess -> p_s);
 }
+
+/***** internal functions *****/
+
+HIDDEN void passUpOrDie(int exceptType) {
+  /*
+  Function: passUpOrDie
+  Purpose:
+  Parameters: exceptType
+  */
+
+  if (curr_proc->p_supportStruct != NULL) {
+    copyState ((state_PTR) BIOSDATAPAGE, &(curr_proc->p_supportStruct->sup_exceptState[exceptType])); /* something else goes at the end of this line potentially */
+    LDCXT(curr_proc->p_supportStruct->sup_exceptContext[exceptType].c_stackPtr,
+      curr_proc->p_supportStruct->sup_exceptContext[exceptType].c_status,
+      curr_proc->p_supportStruct->sup_exceptContext[exceptType].c_pc);
+  }
+  abort_proc(curr_proc);
+  switchProcess();
+} /* end of passUpOrDie */
+
+/***** external functions *****/
+
+void pgmTrapHandler() {
+  /*
+  Function: pgmTrapHandler
+  Purpose:
+  Parameters: None
+  */
+
+  passUpOrDie(GENERALEXCEPT);
+} /* end of pgmTrapHandler */
+
