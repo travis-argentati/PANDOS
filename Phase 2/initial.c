@@ -73,6 +73,7 @@ void main(){
   return (0);
 }
 
+void generalExpectionHandler(){
 
 
 void generalExpectionHandler(){
