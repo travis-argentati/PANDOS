@@ -1,69 +1,96 @@
 #include "../h/const.h"
 #include "../h/types.h"
+
+/*#include "p2test.c"*/
+
+
 #include "../h/initial.h"
+#include "../h/scheduler.h"
+#include "../h/exceptions.h"
+#include "../h/interrupts.h"
 #include "../h/asl.h"
 #include "../h/pcb.h"
 
+#include "/usr/local/include/umps3/umps/libumps.h"
 
-static int processCount;
-static int softBlockedCount;
-static pcb_t *readyQueue;
-static pcb_t *currentProcess;
-static int deviceSema4;
+extern void test();
+extern void uTLB_RefillHandler();
+
+/*HIDDEN void generalExceptionHandler();*/
+
+/* Global variables */
+int processCount;
+int softBlockedCount;
+pcb_t *currentProcess;
+pcb_t *readyQueue;
+cpu_t startTOD;
+
+int deviceSema4 [DEVCOUNT+DEVPERINT+1];
+#define clock deviceSema4 [DEVCOUNT+DEVPERINT]
 
 void main(){
 
-  processCount = 0;
-  softBlockedCount = 0;
-  readyQueue = mkEmptyProcQ();
-  currentProcess = NULL;
-  deviceSema4 = 0;
+  /* Initialize pass up vector */
+  passupvector_t *passUpVector = (passupvector_t *) PASSUPVECTOR;
+  passUpVector->tlb_refll_handler = (memaddr) uTLB_RefillHandler;
+  passUpVector->tlb_refll_stackPtr = 0x20001000;
+  passUpVector->exception_handler = (memaddr) generalExpectionHandler;
+  passUpVector->exception_stackPtr = 0x20001000;
 
+  /* Initialize process queue and semaphore queue */
   initPcbs();
   initASL();
-  
-  /* instantiate 1 process:
-      be in kernal mode
-      enable interrupts
-      use program counter to set address of test
-      set stack pointer to RAMTOP
-      increment processCount (processCount++)
-      call allocPcb in pcb.c to set process tree fields to NULL
-      p_time = 0;
-      p_semAdd = NULL;
-      p_supportStruct = NULL;
-      then call insertProcQ
-      then call scheduler() */
 
 
-  processCount = 0;
-  softBlockedCount = 0;
-  readyQueue = mkEmptyProcQ();
+  /* Set up empty ready queue and empty current process */
   currentProcess = NULL;
-  deviceSema4 = 0;
+  readyQueue = mkEmptyProcQ();
 
-  /*
-  instantiate 1 process
-  in kernal mode
-  interrupts enabled
-  pc p1test
-  sp last and of ram
-  processCount++;
-  insertProcQ();
-  scheduler();
-  */
+  
+  clock = 0;
+  for (int i = 0; i < (DEVCOUNT+DEVPERINT); i++){
+    deviceSema4[i] = 0;
+  }
 
+  LDIT(100000);
 
+  memaddr ramTop = 0x00000000;
+  RAMTOP(ramTop);
+
+  pcb_t *temp = allocPcb();
+  if (temp != NULL) {
+    temp -> p_s.s_pc = temp -> p_s.s_t9 = (memaddr)test;
+    temp -> p_s.s_status = ALLOFF | INTERRUPTENABLED_P | IMON | TEON;
+    temp -> p_s.s_sp = ramTop;
+    processCount++;
+    insertProcQ(&readyQueue, temp);
+
+    /* call scheduler */
+    scheduler();
+  } else {
+    PANIC();
+  }
+  return (0);
 }
 
 
-generalExpectionHandler(){
-  /*
-  Look at cause register stored by BIOS
-  Multiway branch
-  -interrupts
-  -SYSCALL
-  -programException
-  -memoryManagment
-  */
+
+void generalExpectionHandler(){
+
+  state_t *prevState = (state_t *) BIOSDATAPAGE;
+
+  int exceptionType = (prevState -> s_cause &0x0000007C ) >> CAUSESHIFT;
+
+
+  if(exceptionType == IOINTERRUPTS){
+    interruptHandler();
+  } if (exceptionType <= TLBINVLDS){
+    uTLB_RefillHandler();
+  } if (exceptionType == SYSEXCEPT){
+    syscallHandler();
+  }
+
+  programTrapHandler();
+
+
 }

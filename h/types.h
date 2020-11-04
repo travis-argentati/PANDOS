@@ -16,21 +16,34 @@ typedef unsigned int memaddr;
 
 
 /* Device Register */
-typedef struct {
+typedef struct dtpreg{
 	unsigned int d_status;
 	unsigned int d_command;
 	unsigned int d_data0;
 	unsigned int d_data1;
-} device_t;
+} dtpreg_t;
 
+/*
 #define t_recv_status		d_status
 #define t_recv_command		d_command
 #define t_transm_status		d_data0
 #define t_transm_command	d_data1
+*/
 
+typedef	struct termreg{
+	unsigned int recv_status;
+	unsigned int recv_command;
+	unsigned int transm_status;
+	unsigned int transm_command
+} termreg_t;
+
+typedef union devreg{
+	dtpreg_t dtp;
+	termreg_t term;
+} devreg_t;
 
 /* Bus Register Area */
-typedef struct {
+typedef struct devregarea{
 	unsigned int rambase;
 	unsigned int ramsize;
 	unsigned int execbase;
@@ -44,8 +57,34 @@ typedef struct {
 	unsigned int TLB_Floor_Addr;
 	unsigned int inst_dev[DEVINTNUM];
 	unsigned int interrupt_dev[DEVINTNUM];
-	device_t	devreg[DEVINTNUM * DEVPERINT];
+	devreg_t	devreg[DEVINTNUM][DEVPERINT];
 } devregarea_t;
+
+#define STATEREGNUM	31
+typedef struct state_t {
+	unsigned int	s_entryHI;
+	unsigned int	s_cause;
+	unsigned int	s_status;
+	unsigned int 	s_pc;
+	int	 			s_reg[STATEREGNUM];
+
+}state_t, *state_PTR;
+
+typedef struct context_t{
+
+	unsigned int 	c_stackPtr,
+								c_status,
+								c_pc;
+}context_t;
+
+typedef struct support_t{
+	int 			sup_asid;
+	state_t 	sup_exceptState[2];
+	context_t sup_exceptContext[2];
+	unsigned int sup_stackGen[2];
+	unsigned int sup_stackMM[];
+
+}support_t;
 
 /*process control block type*/
 typedef struct pcb_t{
@@ -55,7 +94,7 @@ typedef struct pcb_t{
 /*process tree fields*/
 									*p_prnt,     /*pointer to parent*/
 									*p_child,    /*pointer to 1st child*/
-									*p_sib;      /*pointer to sibling*/
+									/**p_sib;  */    /*pointer to sibling*/
 									*p_sibnext,  /*pointer to next sibling*/
 									*p_sibprev;  /*pointer to previous sibling*/
 
@@ -82,25 +121,22 @@ typedef struct semd_t{
 
 
 
+/*#define PGFAULTEXCEPT 0;
+#define GENERALEXCEPT 1;*/
+
 
 /* Pass Up Vector */
 typedef struct passupvector {
     unsigned int tlb_refll_handler;
     unsigned int tlb_refll_stackPtr;
-    unsigned int execption_handler;
+    unsigned int exception_handler;
     unsigned int exception_stackPtr;
 } passupvector_t;
 
 
-#define STATEREGNUM	31
-typedef struct state_t {
-	unsigned int	s_entryHI;
-	unsigned int	s_cause;
-	unsigned int	s_status;
-	unsigned int 	s_pc;
-	int	 			s_reg[STATEREGNUM];
 
-} state_t, *state_PTR;
+
+/*} state_t, *state_PTR;*/
 
 #define	s_at	s_reg[0]
 #define	s_v0	s_reg[1]

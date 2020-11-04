@@ -37,10 +37,12 @@
 #define PRNTINT 		  6
 #define TERMINT			  7
 
+
 #define DEVINTNUM		  5		  /* interrupt lines used by devices */
 #define DEVPERINT		  8		  /* devices per interrupt line */
 #define DEVREGLEN		  4		  /* device register field length in bytes, and regs per dev */
 #define DEVREGSIZE	  16 		/* device register size in bytes */
+#define DEVCOUNT      40    /* device count */
 
 /* device register field number for non-terminal devices */
 #define STATUS			  0
@@ -71,11 +73,40 @@
 #define RAMSTART        0x20000000
 #define BIOSDATAPAGE    0x0FFFF000
 #define	PASSUPVECTOR	  0x0FFFF900
+#define BUSREGISTER     0x1000001C
+#define BASEADD         0x10000054
+
+
 
 /* Exceptions related constants */
 #define	PGFAULTEXCEPT	  0
 #define GENERALEXCEPT	  1
 
+#define CAUSESHIFT    2
+#define IOINTERRUPTS  0
+#define TLBINVLDS     3
+#define SYSEXCEPT     8
+#define ALLOFF        0x00000000
+#define INTERRUPTENABLED_P 0x00000004
+#define IMON          0x0000FF00
+#define TEON          0x08000000
+#define INTERRUPTENABLED_C  0x00000001
+
+/* Syscall related constants */
+#define CREATEPROCESS   1
+#define TERMPROCESS     2
+#define PASSEREN        3
+#define VERHOGEN        4
+#define IOWAIT          5
+#define GETTIME         6
+#define CLOCKWAIT       7
+#define GETSUPPORTDATA  8
+
+
+#define PROCESSORLOCALTIMER 1
+#define INTERVALTIMER       2
+
+#define USERMODE_P  0x00000008
 
 /* operations */
 #define	MIN(A,B)		((A) < (B) ? A : B)
@@ -87,5 +118,7 @@
 
 /* Macro to read the TOD clock */
 #define STCK(T) ((T) = ((* ((cpu_t *) TODLOADDR)) / (* ((cpu_t *) TIMESCALEADDR))))
+
+#define RAMTOP(T) ((T) = ((* ((int *) RAMBASEADDR)) + (* ((int *) RAMBASESIZE))))
 
 #endif
