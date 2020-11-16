@@ -14,10 +14,23 @@
 
 void scheduler(){
 
+  terminalInterrupts(TERMINT);
+
   pcb_t *p = removeProcQ(&readyQueue);
+  // p = removeProcQ(&readyQueue);
+  /*
+  if(&(p -> p_s) == ((state_t *)0x20007dd4)){
+    p = removeProcQ(&readyQueue);
+  }*//*
+  if(&(p -> p_s) == ((state_t *)0x20006dd4)){
+    p = removeProcQ(&readyQueue);
+  }
+  */
+
 
   if(p != NULL){
     prepareSwitch(p, 5000);
+    // prepareSwitch(p, 9999999999999);
   }
 
   // if no more processes
@@ -27,7 +40,8 @@ void scheduler(){
   } else {
     if(softBlockedCount > 0){
       currentProcess = NULL;
-      setTIMER(99999999);
+      // setTIMER(9999999999999);
+      setTIMER((unsigned int) 0xFFFFFFFF);
       unsigned int status = ALLOFF | IMON | INTERRUPTENABLED_C | TEON;
       setSTATUS(status);
       WAIT();
@@ -43,6 +57,7 @@ void scheduler(){
 
 void contextSwitch(pcb_t *currentProc){
   currentProcess = currentProc;
+  // printerInterrupts(PRNTINT);
   LDST(&(currentProcess -> p_s));
 }
 

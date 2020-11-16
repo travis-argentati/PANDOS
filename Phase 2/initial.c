@@ -24,18 +24,18 @@ int softBlockedCount;
 pcb_t *currentProcess;
 pcb_t *readyQueue;
 cpu_t startTOD;
-
+unsigned int deviceStat[DEVCOUNT+DEVPERINT];
 int deviceSema4 [DEVCOUNT+DEVPERINT+1];
-#define clock deviceSema4 [DEVCOUNT+DEVPERINT]
+#define clockSem deviceSema4 [DEVCOUNT+DEVPERINT]
 
 void main(){
 
   /* Initialize pass up vector */
   passupvector_t *passUpVector = (passupvector_t *) PASSUPVECTOR;
-  passUpVector->tlb_refll_handler = (memaddr) uTLB_RefillHandler;
-  passUpVector->tlb_refll_stackPtr = 0x20001000;
-  passUpVector->exception_handler = (memaddr) generalExpectionHandler;
-  passUpVector->exception_stackPtr = 0x20001000;
+  passUpVector -> tlb_refll_handler = (memaddr) uTLB_RefillHandler;
+  passUpVector -> tlb_refll_stackPtr = 0x20001000;
+  passUpVector -> exception_handler = (memaddr) generalExpectionHandler;
+  passUpVector -> exception_stackPtr = 0x20001000;
 
   /* Initialize process queue and semaphore queue */
   initPcbs();
@@ -45,16 +45,15 @@ void main(){
   /* Set up empty ready queue and empty current process */
   currentProcess = NULL;
   readyQueue = mkEmptyProcQ();
+  clockSem = 0;
 
-  
-  clock = 0;
   for (int i = 0; i < (DEVCOUNT+DEVPERINT); i++){
     deviceSema4[i] = 0;
   }
 
   LDIT(100000);
 
-  memaddr ramTop = 0x00000000;
+  memaddr ramTop;
   RAMTOP(ramTop);
 
   pcb_t *temp = allocPcb();
@@ -72,8 +71,6 @@ void main(){
   }
   return (0);
 }
-
-void generalExpectionHandler(){
 
 
 void generalExpectionHandler(){

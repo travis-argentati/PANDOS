@@ -12,7 +12,6 @@
 #include "../h/pcb.h"
 
 int *mutex = 0;
-int clockSem = 0;
 int currentTOD;
 
 void syscallHandler(/*int syscallRequest, int p_s, int p_supportStruct, int waitForTerminalRead*/){
@@ -52,7 +51,7 @@ void syscallHandler(/*int syscallRequest, int p_s, int p_supportStruct, int wait
     }
 
     case GETTIME: {
-      get_CPU_Time();
+
     }
 
     case CLOCKWAIT: {
@@ -109,8 +108,11 @@ void create_Process(){
   //put a return code in v0
   currentProcess -> p_s.s_v0 = 1;
   //return control to current process (LDST(& static is stored))
-  contextSwitch(temp);
+  // contextSwitch(temp);
+  contextSwitch(currentProcess);
 }
+
+
 
 void terminate_Process(pcb_t *currentProcess){
   while(!emptyChild(currentProcess)){
@@ -118,6 +120,9 @@ void terminate_Process(pcb_t *currentProcess){
   }
   outChild(currentProcess);
 }
+
+
+
 
 void passeren(){
 
@@ -153,6 +158,7 @@ void passUpOrDie(int exceptionType){
           currentProcess -> p_supportStruct -> sup_exceptContext[exceptionType].c_status,
           currentProcess -> p_supportStruct -> sup_exceptContext[exceptionType].c_pc);
   }
+
   terminate_Process(currentProcess);
   scheduler();
 
@@ -176,6 +182,7 @@ void wait_For_IO_Devices(){
     softBlockedCount++;
     blockCurrentProc(&(deviceSema4[deviceNumber]));
   } else {
+    currentProcess -> p_s.s_v0  = deviceStat[deviceNumber];
     contextSwitch(currentProcess);
   }
 }
@@ -187,8 +194,8 @@ void get_CPU_Time(){
 void blockCurrentProc(int *blockedSem){
 
   cpu_t stopTOD;
-
   STCK(stopTOD);
+
   currentProcess -> p_time = currentProcess -> p_time + (stopTOD - startTOD);
   insertBlocked(blockedSem, currentProcess);
 
@@ -199,7 +206,14 @@ void blockCurrentProc(int *blockedSem){
 
 void wait_For_Clock(){
 
+  clockSem--;
 
+  if(clockSem < 0){
+    softBlockedCount++;
+    blockCurrentProc(&clockSem);
+  }
+
+  contextSwitch(currentProcess);
 
 }
 
